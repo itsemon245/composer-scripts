@@ -2,17 +2,10 @@
 
 # Define the path to composer.json
 COMPOSER_FILE="composer.json"
-ROUTES_FILE="routes/web.php"
 
 # Check if composer.json exists
 if [ ! -f "$COMPOSER_FILE" ]; then
   echo "Error: $COMPOSER_FILE not found."
-  exit 1
-fi
-
-# Check if routes/web.php exists
-if [ ! -f "$ROUTES_FILE" ]; then
-  echo "Error: $ROUTES_FILE not found."
   exit 1
 fi
 
@@ -54,13 +47,10 @@ else
     echo "Error: Failed to install log-viewer."
     exit 1
   fi
-
-  # Add log-viewer route to routes/web.php
-  if ! grep -q "LogViewer::routes()" "$ROUTES_FILE"; then
-    echo "\n\App\LogViewer\LogViewer::routes();" >> "$ROUTES_FILE"
-    echo "Added log-viewer route to $ROUTES_FILE."
-  else
-    echo "LogViewer route already exists in $ROUTES_FILE."
+  php artisan log-viewer:publish
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to publish log-viewer files"
+    exit 1
   fi
 fi
 

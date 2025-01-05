@@ -36,10 +36,7 @@ fi
 
 # Define the new script to be added
 NEW_SCRIPT_KEY="dev"
-NEW_SCRIPT_VALUE="[
-  \"Composer\\Config::disableProcessTimeout\",
-  \"npx concurrently -c '#93c5fd,#c4b5fd,#fb7185,#fdba74' 'php artisan serve' 'php artisan queue:listen --tries=1' 'echo Logs are available at http://localhost:8000/log-viewer' 'npm run dev' --names=server,queue,logs,vite\"
-]"
+NEW_SCRIPT_VALUE='["Composer\\Config::disableProcessTimeout", "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"echo Logs are available at http://localhost:8000/log-viewer\" \"npm run dev\" --names=server,queue,logs,vite"]'
 
 # Backup the original composer.json
 cp "$COMPOSER_FILE" "$COMPOSER_FILE.bak"
@@ -67,7 +64,7 @@ if jq -e ".scripts.$NEW_SCRIPT_KEY" "$COMPOSER_FILE" >/dev/null; then
   echo -e "${YELLOW}[INFO] The dev script already exists in $COMPOSER_FILE. No changes made.${RESET}"
 else
   # Add the dev script
-  jq ".scripts.$NEW_SCRIPT_KEY = $NEW_SCRIPT_VALUE" "$COMPOSER_FILE" > "$COMPOSER_FILE.tmp" && mv "$COMPOSER_FILE.tmp" "$COMPOSER_FILE"
+  jq ".scripts += {\"$NEW_SCRIPT_KEY\": $NEW_SCRIPT_VALUE}" "$COMPOSER_FILE" > "$COMPOSER_FILE.tmp" && mv "$COMPOSER_FILE.tmp" "$COMPOSER_FILE"
   echo -e "${GREEN}[SUCCESS] Successfully added the dev script to $COMPOSER_FILE. A backup has been created as $COMPOSER_FILE.bak.${RESET}"
 fi
 
